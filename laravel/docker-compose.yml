@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+
+### Webserver Container #######################################
+
+  app:
+    container_name: ltiapp
+    image: juancho85/nginx_webserver:20190217
+    ports:
+      - "443:443"
+      - "80:80"
+    working_dir: /app
+    env_file:
+      - ./nginx/.env
+    volumes:
+      - ./app:/app
+      - ./nginx/config/php-local.ini:/opt/docker/etc/php/php.ini
+      - ./nginx/config/vhost.conf:/opt/docker/etc/nginx/vhost.conf
+      - ./nginx/config/10-general.conf:/opt/docker/etc/nginx/vhost.common.d/10-general.conf
+      - ./nginx/config/10-php.conf:/opt/docker/etc/nginx/vhost.common.d/10-php.conf
+      - ./nginx/config/webserver.crt:/opt/docker/etc/nginx/ssl/server.crt
+      - ./nginx/config/webserver.csr:/opt/docker/etc/nginx/ssl/server.csr
+      - ./nginx/config/webserver.key:/opt/docker/etc/nginx/ssl/server.key
+
+  ### MySql Container #######################################
+
+  db:
+    container_name: ltidb
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_bin
+      --innodb_file_format=barracuda
+      --innodb_file_per_table=On
+      --innodb_large_prefix=On
+    env_file:
+      - ./mysql/.env
+    volumes:
+      - ltidbdata:/var/lib/mysql
+volumes:
+  ltidbdata:

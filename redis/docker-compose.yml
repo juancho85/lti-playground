@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+
+  ### Redis Container #######################################
+
+  redis:
+    container_name: redis
+    image: redis:4.0.6
+    ports:
+      - "6379:6379"
+    env_file:
+      - ./env/.env
+    volumes:
+      - redis:/var/lib/redis
+#    command: ["redis-server", "--requirepass", "redis"]
+
+volumes:
+  redis:
